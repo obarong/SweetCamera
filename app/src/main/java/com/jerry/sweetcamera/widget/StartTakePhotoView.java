@@ -15,12 +15,16 @@ import android.hardware.Camera;
 import android.hardware.Camera.PreviewCallback;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 
 import com.jerry.sweetcamera.CameraManager;
+import com.jerry.sweetcamera.R;
+import com.jerry.sweetcamera.util.BitmapUtils;
+import com.jerry.sweetcamera.util.FastBlur;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;

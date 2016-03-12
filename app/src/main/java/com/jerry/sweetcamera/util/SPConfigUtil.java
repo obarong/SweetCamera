@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.jerry.sweetcamera.SweetApplication;
 
@@ -61,7 +62,7 @@ public class SPConfigUtil {
 			SharedPreferences sp = SweetApplication.CONTEXT.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
 			cf = sp.getString(key, null);
 		} catch (Exception e) {
-			// MeilaLog.e(TAG, e);
+			// Log.e(TAG, e);
 		}
 		return cf;
 	}
@@ -76,7 +77,7 @@ public class SPConfigUtil {
 			edit.putString(key, val);
 			edit.commit();
 		} catch (Exception e) {
-			MeilaLog.e(TAG, e);
+			Log.e(TAG, e.toString());
 		}
 
 	}
@@ -88,7 +89,7 @@ public class SPConfigUtil {
 			edit.remove(key);
 			edit.commit();
 		} catch (Exception e) {
-			MeilaLog.e(TAG, e);
+			Log.e(TAG, e.toString());
 		}
 	}
 	
@@ -99,7 +100,7 @@ public class SPConfigUtil {
 			edit.clear();
 			edit.commit();
 		} catch (Exception e) {
-			MeilaLog.e(TAG, e);
+			Log.e(TAG, e.toString());
 		}
 	}
 }

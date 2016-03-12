@@ -15,7 +15,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.meilapp.meila.R;
+import com.jerry.sweetcamera.R;
+
 
 /**
  * @ClassName: FocusImageView

@@ -3,6 +3,7 @@ package com.jerry.sweetcamera.widget;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -143,7 +144,7 @@ public class CameraMaskView extends RelativeLayout {
     }
 
     public void closeTo100WithAnim(){
-        MeilaLog.i(TAG,"closeTo100WithAnim");
+        Log.i(TAG,"closeTo100WithAnim");
 
         setVisibility(VISIBLE);
         m_ivTop.clearAnimation();
@@ -155,7 +156,7 @@ public class CameraMaskView extends RelativeLayout {
     }
 
     public void openAllWithAnim(){
-        MeilaLog.i(TAG,"openAllWithAnim");
+        Log.i(TAG,"openAllWithAnim");
 
         setVisibility(VISIBLE);
         m_ivTop.clearAnimation();

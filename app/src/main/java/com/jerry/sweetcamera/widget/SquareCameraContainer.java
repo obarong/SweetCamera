@@ -15,6 +15,7 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.FloatMath;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -30,6 +31,10 @@ import com.jerry.sweetcamera.ICameraOperation;
 import com.jerry.sweetcamera.R;
 import com.jerry.sweetcamera.SensorControler;
 import com.jerry.sweetcamera.SweetApplication;
+import com.jerry.sweetcamera.util.BitmapUtils;
+import com.jerry.sweetcamera.util.FileUtil;
+import com.jerry.sweetcamera.util.SPConfigUtil;
+import com.jerry.sweetcamera.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -394,13 +399,13 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
         public void onPictureTaken(final byte[] data, Camera camera) {
             mActivity.rest();
 
-            MeilaLog.i(TAG,"pictureCallback");
+            Log.i(TAG,"pictureCallback");
 
             mCameraMaskView.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
 
-                    MeilaLog.i(TAG,"onAnimationStart");
+                    Log.i(TAG,"onAnimationStart");
 
                     if (m_mask != null) {
                         m_mask.setVisibility(VISIBLE);
@@ -527,7 +532,7 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
 
             //保存到SD卡
             if (StringUtils.isEmpty(mImagePath)) {
-                MeilaLog.e(TAG, "要保存的图片路径为空");
+                Log.e(TAG, "要保存的图片路径为空");
                 return false;
             }
 
@@ -537,7 +542,7 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
                 return false;
             }
 
-            MeilaLog.i(TAG, "saveToSDCard beforefindFitBitmap time:" + (System.currentTimeMillis() - lastTime));
+            Log.i(TAG, "saveToSDCard beforefindFitBitmap time:" + (System.currentTimeMillis() - lastTime));
             //从本地读取合适的sampleSize,默认为1
             int sampleSize = SPConfigUtil.loadInt("sampleSize", 1);
             Bitmap bitmap = findFitBitmap(data, getCropRect(data), sampleSize);
@@ -546,11 +551,11 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
                 return false;
             }
 
-            MeilaLog.i(TAG, "saveToSDCard beforeSave time:" + (System.currentTimeMillis() - lastTime));
+            Log.i(TAG, "saveToSDCard beforeSave time:" + (System.currentTimeMillis() - lastTime));
             BitmapUtils.saveBitmap(bitmap, mImagePath);
             bitmap.recycle();
 
-            MeilaLog.i(TAG, "saveToSDCard afterSave time:" + (System.currentTimeMillis() - lastTime));
+            Log.i(TAG, "saveToSDCard afterSave time:" + (System.currentTimeMillis() - lastTime));
             return true;
         }
 
@@ -614,12 +619,12 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
                 //未抛出异常，保存合适的sampleSize
                 SPConfigUtil.save("sampleSize", sampleSize + "");
 
-                MeilaLog.i(TAG, "sampleSize:" + sampleSize);
-                MeilaLog.i(TAG, "saveToSDCard afterLoad Bitmap time:" + (System.currentTimeMillis() - lastTime));
+                Log.i(TAG, "sampleSize:" + sampleSize);
+                Log.i(TAG, "saveToSDCard afterLoad Bitmap time:" + (System.currentTimeMillis() - lastTime));
 
 //                if(mCameraView.needRotateBitmap()) {
                 bitmap = rotateBitmap(bitmap, isBackCamera);
-                MeilaLog.i(TAG, "saveToSDCard afterRotate Bitmap time:" + (System.currentTimeMillis() - lastTime));
+                Log.i(TAG, "saveToSDCard afterRotate Bitmap time:" + (System.currentTimeMillis() - lastTime));
 //                }
                 return bitmap;
             } catch (OutOfMemoryError e) {
@@ -701,7 +706,7 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
                     candidate -= 1;
             }
             //if (VERBOSE)
-            MeilaLog.i(TAG, "for w/h " + w + "/" + h + " returning " + candidate + "(" + (w / candidate) + " / " + (h / candidate));
+            Log.i(TAG, "for w/h " + w + "/" + h + " returning " + candidate + "(" + (w / candidate) + " / " + (h / candidate));
             return candidate;
         }
     }
@@ -714,14 +719,14 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
 
             boolean result =(Boolean) msg.obj;
 
-            MeilaLog.i(TAG, "TASK onPostExecute:" + (System.currentTimeMillis() - lastTime));
+            Log.i(TAG, "TASK onPostExecute:" + (System.currentTimeMillis() - lastTime));
 
             if (result) {
 //                releaseCamera();    //不要在这个地方释放相机资源   这里是浪费时间的最大元凶  约1500ms左右
                 mActivity.postFinish();
-                MeilaLog.i(TAG, "TASK:" + (System.currentTimeMillis() - lastTime));
+                Log.i(TAG, "TASK:" + (System.currentTimeMillis() - lastTime));
             } else {
-                MeilaLog.e(TAG, "photo save failed!");
+                Log.e(TAG, "photo save failed!");
                 mCameraMaskView.backToOriginLocation();
                 Toast.makeText(mContext, R.string.topic_camera_takephoto_failure, Toast.LENGTH_SHORT).show();
 

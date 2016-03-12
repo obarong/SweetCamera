@@ -22,6 +22,7 @@ import com.jerry.sweetcamera.IActivityLifiCycle;
 import com.jerry.sweetcamera.ICameraOperation;
 import com.jerry.sweetcamera.R;
 import com.jerry.sweetcamera.SensorControler;
+import com.jerry.sweetcamera.SweetApplication;
 import com.jerry.sweetcamera.util.Utils;
 
 import java.io.IOException;
@@ -136,7 +137,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, I
         Log.i(TAG, "adpterSize Picture-->width:" + adapterSize.width + "  height:" + adapterSize.height);
 
         //在这里 adapterSize宽和高是被交换的
-        int width = MeilaApplication.mScreenWidth;
+        int width = SweetApplication.mScreenWidth;
         int height = width * adapterSize.width / adapterSize.height;
 
         //让surfaceView的中心和FrameLayout的中心对齐

@@ -8,7 +8,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.jerry.sweetcamera.album.AlbumHelper;
+import com.jerry.sweetcamera.album.ImageItem;
+import com.jerry.sweetcamera.util.BitmapUtils;
 import com.jerry.sweetcamera.widget.SquareCameraContainer;
+
+import java.util.List;
 
 
 /**
