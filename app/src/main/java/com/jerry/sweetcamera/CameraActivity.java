@@ -1,8 +1,10 @@
 package com.jerry.sweetcamera;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -24,8 +26,6 @@ import java.util.List;
  */
 public class CameraActivity extends Activity {
     public static final String TAG = "CameraActivity";
-
-    public static final String PATH_OUTIMG = "PATH_OUTIMG";
 
     private CameraManager mCameraManager;
 
@@ -70,7 +70,7 @@ public class CameraActivity extends Activity {
     void initData() {
         mCameraManager.bindOptionMenuView(m_tvFlashLight, m_tvCameraDireation);
         mCameraContainer.bindMask(m_mask);
-        mCameraContainer.setImagePath(getIntent().getStringExtra(PATH_OUTIMG));
+//        mCameraContainer.setImagePath(getIntent().getStringExtra(PATH_OUTIMG));
         mCameraContainer.bindActivity(this);
 
         //todo  获取系统相册中的一张相片
@@ -81,7 +81,10 @@ public class CameraActivity extends Activity {
             m_ibRecentPic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onBackPressed();
+                    //跳转到系统相册
+                    Intent intent = new Intent(Intent.ACTION_DEFAULT,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivity(intent);
                 }
             });
         } else {
@@ -173,8 +176,8 @@ public class CameraActivity extends Activity {
         mFinishCount--;
         if (mFinishCount < 0) mFinishCount = 2;
         if (mFinishCount == 0) {
-            setResult(RESULT_OK);
-            finish();
+//            setResult(RESULT_OK);
+//            finish();
         }
         mCameraManager.releaseActivityCamera();
     }

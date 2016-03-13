@@ -335,7 +335,7 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
     public boolean takePicture() {
         setMaskOn();
         boolean flag = mCameraView.takePicture();
-        if (!flag){
+        if (!flag) {
             mSensorControler.unlockFocus();
         }
         setMaskOff();
@@ -399,13 +399,13 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
         public void onPictureTaken(final byte[] data, Camera camera) {
             mActivity.rest();
 
-            Log.i(TAG,"pictureCallback");
+            Log.i(TAG, "pictureCallback");
 
             mCameraMaskView.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
 
-                    Log.i(TAG,"onAnimationStart");
+                    Log.i(TAG, "onAnimationStart");
 
                     if (m_mask != null) {
                         m_mask.setVisibility(VISIBLE);
@@ -484,19 +484,20 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
         }
     }
 
-    public void setMaskOn(){
+    public void setMaskOn() {
         if (m_mask != null) {
             m_mask.setVisibility(VISIBLE);
         }
     }
 
-    public void setMaskOff(){
+    public void setMaskOff() {
         if (m_mask != null) {
             m_mask.setVisibility(GONE);
         }
     }
 
     long lastTime;
+
     private class SavePicTask extends Thread {
         private byte[] data;
         private boolean isBackCamera;
@@ -529,6 +530,10 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
          */
         public boolean saveToSDCard(byte[] data) {
             lastTime = System.currentTimeMillis();
+
+            //ADD 生成保存图片的路径
+            mImagePath = FileUtil.getCameraImgPath();
+            Log.i(TAG, "ImagePath:" + mImagePath);
 
             //保存到SD卡
             if (StringUtils.isEmpty(mImagePath)) {
@@ -711,13 +716,13 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
         }
     }
 
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
 
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
 
-            boolean result =(Boolean) msg.obj;
+            boolean result = (Boolean) msg.obj;
 
             Log.i(TAG, "TASK onPostExecute:" + (System.currentTimeMillis() - lastTime));
 
