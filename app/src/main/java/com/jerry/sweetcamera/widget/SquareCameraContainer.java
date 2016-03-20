@@ -101,7 +101,7 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
         mCameraMaskView = (CameraMaskView) findViewById(R.id.cameraMaskView);
         mZoomSeekBar = (SeekBar) findViewById(R.id.zoomSeekBar);
 
-        mSensorControler = SensorControler.getInstance(mContext);
+        mSensorControler = SensorControler.getInstance();
 
         mSensorControler.setCameraFocusListener(new SensorControler.CameraFocusListener() {
             @Override
@@ -202,7 +202,6 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
         //保证View是正方形
         setMeasuredDimension(len, len);
     }
-
 
     /**
      * 记录是拖拉照片模式还是放大缩小照片模式
@@ -496,6 +495,97 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
         }
     }
 
+    /**
+     * 旋转bitmap
+     * 对于前置摄像头和后置摄像头采用不同的旋转角度  前置摄像头还需要做镜像水平翻转
+     *
+     * @param bitmap
+     * @param isBackCamera
+     * @return
+     */
+    public Bitmap rotateBitmap(Bitmap bitmap, boolean isBackCamera) {
+        System.gc();
+        int degrees = isBackCamera ? 0 : 0;
+        degrees = mCameraView.getPicRotation();
+        if (null == bitmap) {
+            return bitmap;
+        }
+        Matrix matrix = new Matrix();
+        matrix.setRotate(degrees, bitmap.getWidth() / 2, bitmap.getHeight() / 2);
+        if (!isBackCamera) {
+            matrix.postScale(-1, 1, bitmap.getWidth() / 2, bitmap.getHeight() / 2);   //镜像水平翻转
+        }
+//            Bitmap bmp = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,!isBackCamera);
+        //不需要透明度 使用RGB_565
+        Bitmap bmp = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
+        Paint paint = new Paint();
+        Canvas canvas = new Canvas(bmp);
+        canvas.drawBitmap(bitmap, matrix, paint);
+
+
+        if (null != bitmap) {
+            bitmap.recycle();
+        }
+
+        return bmp;
+    }
+
+
+
+    /**
+     * 获取以中心点为中心的正方形区域
+     *
+     * @param data
+     * @return
+     */
+    private Rect getCropRect(byte[] data) {
+        //获得图片大小
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(data, 0, data.length, options);
+
+        int width = options.outWidth;
+        int height = options.outHeight;
+        int centerX = width / 2;
+        int centerY = height / 2;
+
+        int PHOTO_LEN = Math.min(width, height);
+        return new Rect(centerX - PHOTO_LEN / 2, centerY - PHOTO_LEN / 2, centerX + PHOTO_LEN / 2, centerY + PHOTO_LEN / 2);
+    }
+
+    /**
+     * 给出合适的sampleSize的建议
+     *
+     * @param data
+     * @param target
+     * @return
+     */
+    private int suggestSampleSize(byte[] data, int target) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        options.inPurgeable = true;
+        BitmapFactory.decodeByteArray(data, 0, data.length, options);
+
+        int w = options.outWidth;
+        int h = options.outHeight;
+        int candidateW = w / target;
+        int candidateH = h / target;
+        int candidate = Math.max(candidateW, candidateH);
+        if (candidate == 0)
+            return 1;
+        if (candidate > 1) {
+            if ((w > target) && (w / candidate) < target)
+                candidate -= 1;
+        }
+        if (candidate > 1) {
+            if ((h > target) && (h / candidate) < target)
+                candidate -= 1;
+        }
+        //if (VERBOSE)
+        Log.i(TAG, "for w/h " + w + "/" + h + " returning " + candidate + "(" + (w / candidate) + " / " + (h / candidate));
+        return candidate;
+    }
+
     long lastTime;
 
     private class SavePicTask extends Thread {
@@ -520,7 +610,6 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
             msg.obj = saveToSDCard(data);
             handler.sendMessage(msg);
         }
-
 
         /**
          * 将拍下来的照片存放在SD卡中
@@ -562,41 +651,6 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
 
             Log.i(TAG, "saveToSDCard afterSave time:" + (System.currentTimeMillis() - lastTime));
             return true;
-        }
-
-        /**
-         * 旋转bitmap
-         * 对于前置摄像头和后置摄像头采用不同的旋转角度  前置摄像头还需要做镜像水平翻转
-         *
-         * @param bitmap
-         * @param isBackCamera
-         * @return
-         */
-        public Bitmap rotateBitmap(Bitmap bitmap, boolean isBackCamera) {
-            System.gc();
-            int degrees = isBackCamera ? 0 : 0;
-            degrees = mCameraView.getPicRotation();
-            if (null == bitmap) {
-                return bitmap;
-            }
-            Matrix matrix = new Matrix();
-            matrix.setRotate(degrees, bitmap.getWidth() / 2, bitmap.getHeight() / 2);
-            if (!isBackCamera) {
-                matrix.postScale(-1, 1, bitmap.getWidth() / 2, bitmap.getHeight() / 2);   //镜像水平翻转
-            }
-//            Bitmap bmp = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,!isBackCamera);
-            //不需要透明度 使用RGB_565
-            Bitmap bmp = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
-            Paint paint = new Paint();
-            Canvas canvas = new Canvas(bmp);
-            canvas.drawBitmap(bitmap, matrix, paint);
-
-
-            if (null != bitmap) {
-                bitmap.recycle();
-            }
-
-            return bmp;
         }
 
         /**
@@ -660,61 +714,9 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
                 }
             }
         }
-
-        /**
-         * 获取以中心点为中心的正方形区域
-         *
-         * @param data
-         * @return
-         */
-        private Rect getCropRect(byte[] data) {
-            //获得图片大小
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            BitmapFactory.decodeByteArray(data, 0, data.length, options);
-
-            int width = options.outWidth;
-            int height = options.outHeight;
-            int centerX = width / 2;
-            int centerY = height / 2;
-
-            int PHOTO_LEN = Math.min(width, height);
-            return new Rect(centerX - PHOTO_LEN / 2, centerY - PHOTO_LEN / 2, centerX + PHOTO_LEN / 2, centerY + PHOTO_LEN / 2);
-        }
-
-        /**
-         * 给出合适的sampleSize的建议
-         *
-         * @param data
-         * @param target
-         * @return
-         */
-        private int suggestSampleSize(byte[] data, int target) {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            options.inPurgeable = true;
-            BitmapFactory.decodeByteArray(data, 0, data.length, options);
-
-            int w = options.outWidth;
-            int h = options.outHeight;
-            int candidateW = w / target;
-            int candidateH = h / target;
-            int candidate = Math.max(candidateW, candidateH);
-            if (candidate == 0)
-                return 1;
-            if (candidate > 1) {
-                if ((w > target) && (w / candidate) < target)
-                    candidate -= 1;
-            }
-            if (candidate > 1) {
-                if ((h > target) && (h / candidate) < target)
-                    candidate -= 1;
-            }
-            //if (VERBOSE)
-            Log.i(TAG, "for w/h " + w + "/" + h + " returning " + candidate + "(" + (w / candidate) + " / " + (h / candidate));
-            return candidate;
-        }
     }
+
+
 
     private Handler handler = new Handler() {
 

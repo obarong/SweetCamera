@@ -83,7 +83,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, I
         setFocusable(true);
         getHolder().addCallback(this);//为SurfaceView的句柄添加一个回调函数
 
-        mSensorControler = SensorControler.getInstance(mContext);
+        mSensorControler = SensorControler.getInstance();
         mOrientationListener = new CameraOrientationListener(mContext);
         mOrientationListener.enable();
     }

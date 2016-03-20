@@ -214,6 +214,12 @@ public class CameraManager implements ICameraHelper {
         }
     }
 
+    public void unbinding(){
+        m_tvCameraDireation = null;
+        m_tvFlashLight = null;
+    }
+
+
 
     /**
      * 设置相机拍照的尺寸

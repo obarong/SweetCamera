@@ -1,6 +1,5 @@
 package com.jerry.sweetcamera;
 
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 
@@ -10,11 +9,6 @@ import android.hardware.Camera;
  * @date 2015-09-01
  */
 public class CameraHelperBaseImpl implements ICameraHelper {
-    private Context mContext;
-
-    public CameraHelperBaseImpl(Context context) {
-        mContext = context;
-    }
 
     @Override
     public int getNumberOfCameras() {
@@ -44,6 +38,6 @@ public class CameraHelperBaseImpl implements ICameraHelper {
     }
 
     private boolean hasCameraSupport() {
-        return mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+        return SweetApplication.CONTEXT.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
 }

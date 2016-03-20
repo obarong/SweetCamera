@@ -1,13 +1,11 @@
 package com.jerry.sweetcamera;
 
 import android.app.Activity;
-import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
-
 
 import java.util.Calendar;
 
@@ -43,14 +41,14 @@ public class SensorControler implements IActivityLifiCycle, SensorEventListener 
 
     private int foucsing = 1;  //1 表示没有被锁定 0表示被锁定
 
-    private SensorControler(Context context) {
-        mSensorManager = (SensorManager) context.getSystemService(Activity.SENSOR_SERVICE);
+    private SensorControler() {
+        mSensorManager = (SensorManager) SweetApplication.CONTEXT.getSystemService(Activity.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);// TYPE_GRAVITY
     }
 
-    public static SensorControler getInstance(Context context) {
+    public static SensorControler getInstance() {
         if (mInstance == null) {
-            mInstance = new SensorControler(context);
+            mInstance = new SensorControler();
         }
         return mInstance;
     }

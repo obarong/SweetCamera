@@ -139,6 +139,7 @@ public class CameraActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mCameraManager.unbinding();
         mCameraManager.releaseActivityCamera();
     }
 
