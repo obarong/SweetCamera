@@ -27,9 +27,6 @@
         android:layout_marginRight="50dip"
         android:visibility="gone" />
 
-    <com.jerry.sweetcamera.widget.CameraMaskView
-        android:id="@+id/cameraMaskView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+
 
 </merge>

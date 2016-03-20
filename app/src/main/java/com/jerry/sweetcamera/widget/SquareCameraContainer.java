@@ -18,11 +18,9 @@ import android.util.FloatMath;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
-
 
 import com.jerry.sweetcamera.CameraActivity;
 import com.jerry.sweetcamera.CameraManager;
@@ -61,17 +59,9 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
      */
     private FocusImageView mFocusImageView;
     /**
-     * 动画遮罩层
-     */
-    private CameraMaskView mCameraMaskView;
-    /**
      * 缩放控件
      */
     private SeekBar mZoomSeekBar;
-    /**
-     * 操作面板遮罩层  用于屏蔽拍照 退出等操作
-     */
-    private View m_mask;
 
     private CameraActivity mActivity;
 
@@ -98,7 +88,6 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
 
         mCameraView = (CameraView) findViewById(R.id.cameraView);
         mFocusImageView = (FocusImageView) findViewById(R.id.focusImageView);
-        mCameraMaskView = (CameraMaskView) findViewById(R.id.cameraMaskView);
         mZoomSeekBar = (SeekBar) findViewById(R.id.zoomSeekBar);
 
         mSensorControler = SensorControler.getInstance();
@@ -115,13 +104,10 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
         mCameraView.setOnCameraPrepareListener(new CameraView.OnCameraPrepareListener() {
             @Override
             public void onPrepare(CameraManager.CameraDirection cameraDirection) {
-                mCameraMaskView.openAllWithAnim();
                 postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (m_mask != null) {
-                            m_mask.setVisibility(GONE);
-                        }
+
                     }
                 }, RESETMASK_DELY);
                 //在这里相机已经准备好 可以获取maxZoom
@@ -154,33 +140,8 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
                 }
             }
         });
-        mCameraMaskView.setAnimationoOpenListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                if (m_mask != null) {
-                    m_mask.setVisibility(VISIBLE);
-                }
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                if (m_mask != null) {
-                    m_mask.setVisibility(GONE);
-                }
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-
-            }
-        });
         mCameraView.setPictureCallback(pictureCallback);
         mZoomSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
-    }
-
-    public void bindMask(View v) {
-        this.m_mask = v;
     }
 
     public void setImagePath(String mImagePath) {
@@ -400,34 +361,7 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
 
             Log.i(TAG, "pictureCallback");
 
-            mCameraMaskView.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                    Log.i(TAG, "onAnimationStart");
-
-                    if (m_mask != null) {
-                        m_mask.setVisibility(VISIBLE);
-                    }
-
-                    mCameraView.stopPreview();
-                    new SavePicTask(data, mCameraView.isBackCamera()).start();
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    if (m_mask != null) {
-                        m_mask.setVisibility(GONE);
-                    }
-                    mActivity.postFinish();
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-            mCameraMaskView.closeTo100WithAnim();
+//            new SavePicTask(data, mCameraView.isBackCamera()).start();
         }
     };
 
@@ -484,15 +418,11 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
     }
 
     public void setMaskOn() {
-        if (m_mask != null) {
-            m_mask.setVisibility(VISIBLE);
-        }
+
     }
 
     public void setMaskOff() {
-        if (m_mask != null) {
-            m_mask.setVisibility(GONE);
-        }
+
     }
 
     /**
@@ -734,7 +664,6 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
                 Log.i(TAG, "TASK:" + (System.currentTimeMillis() - lastTime));
             } else {
                 Log.e(TAG, "photo save failed!");
-                mCameraMaskView.backToOriginLocation();
                 Toast.makeText(mContext, R.string.topic_camera_takephoto_failure, Toast.LENGTH_SHORT).show();
 
                 mActivity.rest();

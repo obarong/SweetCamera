@@ -100,14 +100,6 @@
             </RelativeLayout>
 
         </LinearLayout>
-
-        <View
-            android:id="@+id/mask"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/color_262626_70"
-            android:clickable="true"
-            android:visibility="gone"/>
     </FrameLayout>
 
 </LinearLayout>

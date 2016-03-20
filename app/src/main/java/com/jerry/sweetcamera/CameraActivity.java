@@ -32,7 +32,6 @@ public class CameraActivity extends Activity {
     private TextView m_tvFlashLight, m_tvCameraDireation;
     private SquareCameraContainer mCameraContainer;
     private ImageButton m_ibRecentPic;
-    private View m_mask;
 
     private int mFinishCount = 2;   //finish计数   当动画和异步任务都结束的时候  再调用finish方法
     AlbumHelper helper;
@@ -62,14 +61,12 @@ public class CameraActivity extends Activity {
     void initView() {
         m_tvFlashLight = (TextView) findViewById(R.id.tv_flashlight);
         m_tvCameraDireation = (TextView) findViewById(R.id.tv_camera_direction);
-        m_mask = findViewById(R.id.mask);
         mCameraContainer = (SquareCameraContainer) findViewById(R.id.cameraContainer);
         m_ibRecentPic = (ImageButton) findViewById(R.id.ib_recentpic);
     }
 
     void initData() {
         mCameraManager.bindOptionMenuView(m_tvFlashLight, m_tvCameraDireation);
-        mCameraContainer.bindMask(m_mask);
 //        mCameraContainer.setImagePath(getIntent().getStringExtra(PATH_OUTIMG));
         mCameraContainer.bindActivity(this);
 

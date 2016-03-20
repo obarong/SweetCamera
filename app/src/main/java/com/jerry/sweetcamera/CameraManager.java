@@ -68,7 +68,7 @@ public class CameraManager implements ICameraHelper {
         if (SDK_INT >= GINGERBREAD) {
             mCameraHelper = new CameraHelperGBImpl();
         } else {
-            mCameraHelper = new CameraHelperBaseImpl(context);
+            mCameraHelper = new CameraHelperBaseImpl();
         }
 
         mLightStatus = FlashLigthStatus.valueOf(SPConfigUtil.loadInt(SP_LIGHT_STATUE, FlashLigthStatus.LIGHT_AUTO.ordinal())); //默认 自动
