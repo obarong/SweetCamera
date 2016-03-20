@@ -32,7 +32,7 @@ public class FileUtil {
     public static File updateDir = null;
     public static File updateFile = null;
 
-    public static final String FOLDER = "sweetCamera";
+    public static final String FOLDER = "SweetCamera";
 
     /***
      * 创建文件
@@ -58,14 +58,25 @@ public class FileUtil {
         }
     }
 
+    public static void initFolder() {
+        File imgFile = new File(getCameraImageFolder());
+        if (!imgFile.exists() || imgFile.isFile()) {
+            imgFile.mkdirs();
+        }
+    }
+
+    public static String getAppFoler() {
+        return Environment.getExternalStorageDirectory()
+                + "/" + FOLDER;
+    }
+
     /**
      * 获取拍照照片保存的父目录
      *
      * @return
      */
     public static String getCameraImageFolder() {
-        return Environment.getExternalStorageDirectory()
-                + "/" + FOLDER + "/" + "cameraImg";
+        return getAppFoler() + "/" + "cameraImg";
     }
 
     /**

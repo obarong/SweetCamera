@@ -2,6 +2,7 @@ package com.jerry.sweetcamera;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jerry.sweetcamera.album.AlbumHelper;
 import com.jerry.sweetcamera.album.ImageItem;
@@ -104,7 +106,7 @@ public class CameraActivity extends Activity {
                         public void run() {
                             m_tvCameraDireation.setClickable(true);
                         }
-                    },500);
+                    }, 500);
                 }
             });
         }
@@ -120,7 +122,7 @@ public class CameraActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(mCameraContainer!=null) {
+        if (mCameraContainer != null) {
             mCameraContainer.onStart();
         }
     }
@@ -128,7 +130,7 @@ public class CameraActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
-        if(mCameraContainer!=null) {
+        if (mCameraContainer != null) {
             mCameraContainer.onStop();
         }
     }
@@ -170,13 +172,29 @@ public class CameraActivity extends Activity {
     /**
      * 提交finish任务  进行计数  都在main Thread
      */
-    public void postFinish() {
-        mFinishCount--;
-        if (mFinishCount < 0) mFinishCount = 2;
-        if (mFinishCount == 0) {
+
+    /**
+     * 照完照片 提交
+     */
+    public void postTakePhoto() {
+//        mFinishCount--;
+//        if (mFinishCount < 0) mFinishCount = 2;
+//        if (mFinishCount == 0) {
 //            setResult(RESULT_OK);
 //            finish();
+//        }
+
+
+//        mCameraManager.releaseActivityCamera();
+
+        Toast.makeText(this, "take photo", Toast.LENGTH_SHORT).show();
+
+        Bitmap bitmap = SweetApplication.CONTEXT.getCameraBitmap();
+
+        if (bitmap != null) {
+            m_ibRecentPic.setImageBitmap(bitmap);
         }
-        mCameraManager.releaseActivityCamera();
+
+
     }
 }

@@ -1,6 +1,7 @@
 package com.jerry.sweetcamera.widget;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
@@ -10,6 +11,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -361,7 +363,7 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
 
             Log.i(TAG, "pictureCallback");
 
-//            new SavePicTask(data, mCameraView.isBackCamera()).start();
+            new SavePicTask(data, mCameraView.isBackCamera()).start();
         }
     };
 
@@ -461,7 +463,6 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
     }
 
 
-
     /**
      * 获取以中心点为中心的正方形区域
      *
@@ -514,6 +515,11 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
         //if (VERBOSE)
         Log.i(TAG, "for w/h " + w + "/" + h + " returning " + candidate + "(" + (w / candidate) + " / " + (h / candidate));
         return candidate;
+    }
+
+    public void fileScan(String filePath){
+        Uri data = Uri.parse("file://"+filePath);
+        mActivity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, data));
     }
 
     long lastTime;
@@ -577,7 +583,10 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
 
             Log.i(TAG, "saveToSDCard beforeSave time:" + (System.currentTimeMillis() - lastTime));
             BitmapUtils.saveBitmap(bitmap, mImagePath);
-            bitmap.recycle();
+            SweetApplication.CONTEXT.setCameraBitmap(bitmap);
+//            bitmap.recycle();
+
+
 
             Log.i(TAG, "saveToSDCard afterSave time:" + (System.currentTimeMillis() - lastTime));
             return true;
@@ -647,7 +656,6 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
     }
 
 
-
     private Handler handler = new Handler() {
 
         @Override
@@ -659,8 +667,9 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
             Log.i(TAG, "TASK onPostExecute:" + (System.currentTimeMillis() - lastTime));
 
             if (result) {
+                fileScan(mImagePath);
 //                releaseCamera();    //不要在这个地方释放相机资源   这里是浪费时间的最大元凶  约1500ms左右
-                mActivity.postFinish();
+                mActivity.postTakePhoto();
                 Log.i(TAG, "TASK:" + (System.currentTimeMillis() - lastTime));
             } else {
                 Log.e(TAG, "photo save failed!");

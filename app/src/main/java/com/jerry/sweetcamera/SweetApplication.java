@@ -1,7 +1,10 @@
 package com.jerry.sweetcamera;
 
 import android.app.Application;
+import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
+
+import com.jerry.sweetcamera.util.FileUtil;
 
 /**
  * @author jerry
@@ -14,6 +17,8 @@ public class SweetApplication extends Application {
 
     public static SweetApplication CONTEXT;
 
+    private Bitmap mCameraBitmap;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -25,5 +30,27 @@ public class SweetApplication extends Application {
         SweetApplication.mScreenHeight = mDisplayMetrics.heightPixels;
 
         CONTEXT = this;
+
+        FileUtil.initFolder();
+    }
+
+    public Bitmap getCameraBitmap() {
+        return mCameraBitmap;
+    }
+
+    public void setCameraBitmap(Bitmap mCameraBitmap) {
+        if (mCameraBitmap != null) {
+            recycleCameraBitmap();
+        }
+        this.mCameraBitmap = mCameraBitmap;
+    }
+
+    public void recycleCameraBitmap() {
+        if (mCameraBitmap != null) {
+            if (!mCameraBitmap.isRecycled()) {
+                mCameraBitmap.recycle();
+            }
+            mCameraBitmap = null;
+        }
     }
 }
