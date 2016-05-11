@@ -225,6 +225,13 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, I
 
             return false;
         }
+
+        try {
+            mCamera.startPreview();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
         return true;
     }
 
