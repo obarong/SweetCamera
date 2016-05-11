@@ -7,6 +7,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.OrientationEventListener;
@@ -366,38 +367,48 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, I
             return false;
         }
         //不支持设置自定义聚焦，则使用自动聚焦，返回
-        if (parameters.getMaxNumFocusAreas() <= 0) {
+
+        if(Build.VERSION.SDK_INT >= 14) {
+
+            if (parameters.getMaxNumFocusAreas() <= 0) {
+                return focus(callback);
+            }
+
+            Log.i(TAG, "onCameraFocus:" + point.x + "," + point.y);
+
+            List<Camera.Area> areas = new ArrayList<Camera.Area>();
+            int left = point.x - 300;
+            int top = point.y - 300;
+            int right = point.x + 300;
+            int bottom = point.y + 300;
+            left = left < -1000 ? -1000 : left;
+            top = top < -1000 ? -1000 : top;
+            right = right > 1000 ? 1000 : right;
+            bottom = bottom > 1000 ? 1000 : bottom;
+            areas.add(new Camera.Area(new Rect(left, top, right, bottom), 100));
+            parameters.setFocusAreas(areas);
             try {
-                mCamera.autoFocus(callback);
+                //本人使用的小米手机在设置聚焦区域的时候经常会出异常，看日志发现是框架层的字符串转int的时候出错了，
+                //目测是小米修改了框架层代码导致，在此try掉，对实际聚焦效果没影响
+                mCamera.setParameters(parameters);
             } catch (Exception e) {
+                // TODO: handle exception
                 e.printStackTrace();
-            }finally {
                 return false;
             }
         }
 
-        Log.i(TAG, "onCameraFocus:" + point.x + "," + point.y);
 
-        List<Camera.Area> areas = new ArrayList<Camera.Area>();
-        int left = point.x - 300;
-        int top = point.y - 300;
-        int right = point.x + 300;
-        int bottom = point.y + 300;
-        left = left < -1000 ? -1000 : left;
-        top = top < -1000 ? -1000 : top;
-        right = right > 1000 ? 1000 : right;
-        bottom = bottom > 1000 ? 1000 : bottom;
-        areas.add(new Camera.Area(new Rect(left, top, right, bottom), 100));
-        parameters.setFocusAreas(areas);
+        return focus(callback);
+    }
+
+    private boolean focus(Camera.AutoFocusCallback callback) {
         try {
-            //本人使用的小米手机在设置聚焦区域的时候经常会出异常，看日志发现是框架层的字符串转int的时候出错了，
-            //目测是小米修改了框架层代码导致，在此try掉，对实际聚焦效果没影响
-            mCamera.setParameters(parameters);
+            mCamera.autoFocus(callback);
         } catch (Exception e) {
-            // TODO: handle exception
             e.printStackTrace();
+            return false;
         }
-        mCamera.autoFocus(callback);
         return true;
     }
 
@@ -431,8 +442,10 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, I
             releaseCamera();
 
             //释放资源
-            if(holder!=null){
-                holder.getSurface().release();
+            if (holder != null) {
+                if (Build.VERSION.SDK_INT >= 14) {
+                    holder.getSurface().release();
+                }
             }
         } catch (Exception e) {
             //相机已经关了
