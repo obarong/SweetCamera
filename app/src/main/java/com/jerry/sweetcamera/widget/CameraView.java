@@ -106,6 +106,22 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, I
     }
 
     /**
+     * 调整SurfaceView的宽高
+     * @param adapterSize
+     */
+    private void adjustView(Camera.Size adapterSize ){
+        int width = SweetApplication.mScreenWidth;
+        int height = width * adapterSize.width / adapterSize.height;
+
+        //让surfaceView的中心和FrameLayout的中心对齐
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getLayoutParams();
+        params.topMargin = -(height - width) / 2;
+        params.width = width;
+        params.height = height;
+        setLayoutParams(params);
+    }
+
+    /**
      * 初始化相机
      */
     private void initCamera() {
@@ -134,19 +150,13 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, I
         mCameraManager.setFitPicSize(mCamera, (float) adapterSize.width / adapterSize.height);
         Log.i(TAG, "adpterSize Preview-->width:" + adapterSize.width + "  height:" + adapterSize.height);
 
+
+
         adapterSize = mCamera.getParameters().getPictureSize();
         Log.i(TAG, "adpterSize Picture-->width:" + adapterSize.width + "  height:" + adapterSize.height);
 
-        //在这里 adapterSize宽和高是被交换的
-        int width = SweetApplication.mScreenWidth;
-        int height = width * adapterSize.width / adapterSize.height;
-
-        //让surfaceView的中心和FrameLayout的中心对齐
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getLayoutParams();
-        params.topMargin = -(height - width) / 2;
-        params.width = width;
-        params.height = height;
-        setLayoutParams(params);
+        //调整控件的布局  防止预览被拉伸
+        adjustView(adapterSize);
 
         determineDisplayOrientation();
 
