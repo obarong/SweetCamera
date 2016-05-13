@@ -12,6 +12,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -517,8 +518,8 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
         return candidate;
     }
 
-    public void fileScan(String filePath){
-        Uri data = Uri.parse("file://"+filePath);
+    public void fileScan(String filePath) {
+        Uri data = Uri.parse("file://" + filePath);
         mActivity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, data));
     }
 
@@ -542,9 +543,13 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
         public void run() {
             super.run();
 
+            long current = System.currentTimeMillis();
+
             Message msg = handler.obtainMessage();
             msg.obj = saveToSDCard(data);
             handler.sendMessage(msg);
+
+            Log.i(TAG,"save photo:"+ (System.currentTimeMillis() - current) +"ms");
         }
 
         /**
@@ -587,7 +592,6 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
 //            bitmap.recycle();
 
 
-
             Log.i(TAG, "saveToSDCard afterSave time:" + (System.currentTimeMillis() - lastTime));
             return true;
         }
@@ -612,8 +616,12 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
 
                 is = new ByteArrayInputStream(data);
 
-                BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(is, false);
-                Bitmap bitmap = decoder.decodeRegion(rect, options);
+                Bitmap bitmap = BitmapUtils.decode(is,rect,options);
+
+//                BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(is, false);
+//                bitmap = decoder.decodeRegion(rect, options);
+
+
                 //未抛出异常，保存合适的sampleSize
                 SPConfigUtil.save("sampleSize", sampleSize + "");
 
@@ -635,7 +643,7 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
                 } else {
                     return findFitBitmap(data, rect, suggestSampleSize(data, SweetApplication.mScreenWidth));
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 //try again
                 if (!ioExceptionRetried) {

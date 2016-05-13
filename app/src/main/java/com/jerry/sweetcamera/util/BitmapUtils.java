@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
+import android.graphics.BitmapRegionDecoder;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -15,6 +16,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 
 import android.media.ExifInterface;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -22,6 +24,7 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 
 
 public class BitmapUtils {
@@ -57,7 +60,6 @@ public class BitmapUtils {
     }
 
 
-
     public static Bitmap createBitmap(Bitmap b, float width, float angle) {
         // 计算缩放比例
         if (b != null) {
@@ -79,7 +81,6 @@ public class BitmapUtils {
     }
 
 
-
     public static Bitmap Bytes2Bimap(byte[] b) {
         if (b != null) {
             if (b.length != 0) {
@@ -90,10 +91,10 @@ public class BitmapUtils {
     }
 
 
-    public static Bitmap scale(Bitmap bitmap,float scale){
-        Matrix matrix =new Matrix();
-        matrix.postScale(scale,scale);
-        Bitmap outBitmap = Bitmap.createBitmap(bitmap,0,0,(int)(bitmap.getWidth()),(int)(bitmap.getHeight()),matrix,true);
+    public static Bitmap scale(Bitmap bitmap, float scale) {
+        Matrix matrix = new Matrix();
+        matrix.postScale(scale, scale);
+        Bitmap outBitmap = Bitmap.createBitmap(bitmap, 0, 0, (int) (bitmap.getWidth()), (int) (bitmap.getHeight()), matrix, true);
         bitmap.recycle();
         return outBitmap;
     }
@@ -407,4 +408,26 @@ public class BitmapUtils {
         return outBitmap;
     }
 
+    /**
+     * 按指定区域解码
+     *
+     * @param is
+     * @param rect
+     * @param options
+     */
+    public static Bitmap decode(InputStream is, Rect rect, Options options) throws Exception {
+        Bitmap bitmap = null;
+        if (Build.VERSION.SDK_INT > 9) {
+            BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(is, false);
+            bitmap = decoder.decodeRegion(rect, options);
+        } else {
+            Bitmap temp = BitmapFactory.decodeStream(is, null, options);
+            bitmap = Bitmap.createBitmap(temp, rect.left, rect.top, rect.width(), rect.height());
+            if(temp!=null && !temp.isRecycled()){
+                temp.recycle();
+            }
+        }
+
+        return bitmap;
+    }
 }
