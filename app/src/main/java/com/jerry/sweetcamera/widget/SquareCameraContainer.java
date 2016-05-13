@@ -11,6 +11,8 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -67,6 +69,12 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
     private SeekBar mZoomSeekBar;
 
     private CameraActivity mActivity;
+
+    private SoundPool mSoundPool;
+
+    private boolean mFocusSoundPrepared;
+
+    private int mFocusSoundId;
 
     private String mImagePath;
 
@@ -145,6 +153,24 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
         });
         mCameraView.setPictureCallback(pictureCallback);
         mZoomSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+
+//        //音效初始化
+//        mSoundPool = getSoundPool();
+    }
+
+    private SoundPool getSoundPool(){
+        if(mSoundPool == null) {
+            mSoundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+            mFocusSoundId = mSoundPool.load(mContext,R.raw.camera_focus,1);
+            mFocusSoundPrepared = false;
+            mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+                @Override
+                public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                    mFocusSoundPrepared = true;
+                }
+            });
+        }
+        return mSoundPool;
     }
 
     public void setImagePath(String mImagePath) {
@@ -270,6 +296,7 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
      */
     public void onCameraFocus(final Point point, boolean needDelay) {
         long delayDuration = needDelay ? 300 : 0;
+
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -277,6 +304,11 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
                     if (mCameraView.onFocus(point, autoFocusCallback)) {
                         mSensorControler.lockFocus();
                         mFocusImageView.startFocus(point);
+
+                        //播放对焦音效
+                        if(mFocusSoundPrepared) {
+                            mSoundPool.play(mFocusSoundId, 1.0f, 0.5f, 1, 0, 1.0f);
+                        }
                     }
                 }
             }
@@ -409,6 +441,8 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
         if (mCameraView != null) {
             mCameraView.onStart();
         }
+
+        mSoundPool = getSoundPool();
     }
 
     @Override
@@ -418,6 +452,9 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
         if (mCameraView != null) {
             mCameraView.onStop();
         }
+
+        mSoundPool.release();
+        mSoundPool = null;
     }
 
     public void setMaskOn() {
