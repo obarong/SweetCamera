@@ -495,10 +495,10 @@ public class CameraManager implements ICameraHelper {
     public void releaseCamera(Camera camera) {
         if (camera != null) {
             try {
+                camera.release();
                 camera.stopPreview();
                 camera.setPreviewCallback(null);
                 camera.setPreviewCallbackWithBuffer(null);
-                camera.release();
                 camera = null;
             } catch (Exception e) {
                 e.printStackTrace();
