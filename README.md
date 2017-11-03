@@ -70,5 +70,5 @@
 
 
   [1]: http://blog.csdn.net/huweigoodboy/article/details/51378751
-  [2]: http://on8vjlgub.bkt.clouddn.com/device-2017-11-03-002549.png "device-2017-11-03-002549"
+  [2]: http://on8vjlgub.bkt.clouddn.com/cameraPreview.png "cameraPreview"
   [3]: http://on8vjlgub.bkt.clouddn.com/%E6%B7%B1%E5%BA%A6%E6%88%AA%E5%9B%BE20171103003702.png "原理图"
