@@ -1,3 +1,9 @@
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![platform](https://img.shields.io/badge/platform-Android-yellow.svg)](https://www.android.com)
+[![API](https://img.shields.io/badge/API-14%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=9)
+[![PRs Welcome](https://img.shields.io/badge/prs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![Code Climate](https://img.shields.io/codeclimate/issues/github/me-and/mdf.svg)](https://github.com/WellerV/SweetCamera/issues)
+
 **SweetCamera**主要是为了解决兼容android各种机型的相机自动对焦的问题的项目，这里采用了基于传感器的方案，希望能够帮助您解决自动对焦问题。
 详细可以看[博客][1]。
 ![enter description here][3]
