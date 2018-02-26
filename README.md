@@ -1,41 +1,32 @@
-# SweetCamera
-本工程主要是为了解决android各种机型的相机自动对焦问题，这里采用了一种兼容性比较好的方案，通过传感器进行对焦，希望能够帮助你解决自动对焦问题。
+**SweetCamera**主要是为了解决兼容android各种机型的相机自动对焦的问题的项目，这里采用了基于传感器的方案，希望能够帮助您解决自动对焦问题。
+详细可以看[博客][1]。
 
-[博客详情解读][1]
-
-预览图：
-
+## Preview：
 ![效果图][2]
 
-具体原理如图：
-
+## Flow Chart：
  ![enter description here][3]
 
-核心对焦代码
+## Core Code
 ```java
- if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+    if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             int x = (int) event.values[0];
             int y = (int) event.values[1];
             int z = (int) event.values[2];
             mCalendar = Calendar.getInstance();
-            long stamp = mCalendar.getTimeInMillis();// 1393844912
+            long stamp = mCalendar.getTimeInMillis();
 
-            int second = mCalendar.get(Calendar.SECOND);// 53
+            int second = mCalendar.get(Calendar.SECOND);
 
             if (STATUE != STATUS_NONE) {
                 int px = Math.abs(mX - x);
                 int py = Math.abs(mY - y);
                 int pz = Math.abs(mZ - z);
-//                Log.d(TAG, "pX:" + px + "  pY:" + py + "  pZ:" + pz + "    stamp:"
-//                        + stamp + "  second:" + second);
+
                 double value = Math.sqrt(px * px + py * py + pz * pz);
                 if (value > 1.4) {
-//                    textviewF.setText("检测手机在移动..");
-//                    Log.i(TAG,"mobile moving");
                     STATUE = STATUS_MOVE;
                 } else {
-//                    textviewF.setText("检测手机静止..");
-//                    Log.i(TAG,"mobile static");
                     //上一次状态是move，记录静态时间点
                     if (STATUE == STATUS_MOVE) {
                         lastStaticStamp = stamp;
@@ -47,11 +38,9 @@
                             //移动后静止一段时间，可以发生对焦行为
                             if (!isFocusing) {
                                 canFocusIn = false;
-//                                onCameraFocus();
                                 if (mCameraFocusListener != null) {
                                     mCameraFocusListener.onFocus();
                                 }
-//                                Log.i(TAG,"mobile focusing");
                             }
                         }
                     }
@@ -68,6 +57,9 @@
             mZ = z;
         }
 ```
+
+## End
+如果你觉得不错, 对你有帮助, 欢迎点个 fork, star, follow , 也可以帮忙分享给你更多的朋友, 这是给作者最大的动力与支持。
 
 
   [1]: http://blog.csdn.net/huweigoodboy/article/details/51378751
