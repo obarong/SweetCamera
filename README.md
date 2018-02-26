@@ -1,13 +1,12 @@
 **SweetCamera**主要是为了解决兼容android各种机型的相机自动对焦的问题的项目，这里采用了基于传感器的方案，希望能够帮助您解决自动对焦问题。
 详细可以看[博客][1]。
-
+![enter description here][3]
 ## Preview：
 ![效果图][2]
 
-## Flow Chart：
- ![enter description here][3]
-
 ## Core Code
+具体原理是根据传感器来判断手机的运动状态，如果手机从静止状态变成运行状态后再次进入静止状态，此时就是手机的对焦时机。
+通过传感器方式来触发对焦，可以兼容几乎所有拥有传感器的手机的对焦问题。
 ```java
     if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             int x = (int) event.values[0];
@@ -60,7 +59,6 @@
 
 ## End
 如果你觉得不错, 对你有帮助, 欢迎点个 fork, star, follow , 也可以帮忙分享给你更多的朋友, 这是给作者最大的动力与支持。
-
 
   [1]: http://blog.csdn.net/huweigoodboy/article/details/51378751
   [2]: http://on8vjlgub.bkt.clouddn.com/cameraPreview.png "cameraPreview"
