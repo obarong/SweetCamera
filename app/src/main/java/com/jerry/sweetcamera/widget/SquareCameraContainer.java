@@ -1,5 +1,6 @@
 package com.jerry.sweetcamera.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -51,6 +52,7 @@ import java.io.InputStream;
  */
 public class SquareCameraContainer extends FrameLayout implements ICameraOperation, IActivityLifiCycle {
     public static final String TAG = "SquareCameraContainer";
+    private static final int MSG_REQUEST_FOCUS = 1;
 
     private Context mContext;
 
@@ -109,7 +111,7 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
                 int screenWidth = SweetApplication.mScreenWidth;
                 Point point = new Point(screenWidth / 2, screenWidth / 2);
 
-                onCameraFocus(point);
+//                onCameraFocus(point);
             }
         });
         mCameraView.setOnCameraPrepareListener(new CameraView.OnCameraPrepareListener() {
@@ -372,6 +374,7 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
 
         @Override
         public void onAutoFocus(boolean success, Camera camera) {
+            Log.i(TAG, "onAutoFocus: success=" + success);
             //聚焦之后根据结果修改图片
             if (success) {
                 mFocusImageView.onFocusSuccess();
@@ -436,6 +439,7 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
 
     @Override
     public void onStart() {
+        Log.e(TAG, "onStart");
         mSensorControler.onStart();
 
         if (mCameraView != null) {
@@ -443,10 +447,12 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
         }
 
         mSoundPool = getSoundPool();
+        handler.sendEmptyMessage(MSG_REQUEST_FOCUS);
     }
 
     @Override
     public void onStop() {
+        Log.e(TAG, "onStop");
         mSensorControler.onStop();
 
         if (mCameraView != null) {
@@ -455,6 +461,7 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
 
         mSoundPool.release();
         mSoundPool = null;
+        handler.removeCallbacksAndMessages(null);
     }
 
     public void setMaskOn() {
@@ -701,11 +708,22 @@ public class SquareCameraContainer extends FrameLayout implements ICameraOperati
     }
 
 
+    @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
 
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            Log.i(TAG, "handleMessage: " + msg.what);
+            // 循环发送消息对焦和拍照
+            if (MSG_REQUEST_FOCUS == msg.what) {
+                takePicture();
+                int screenWidth = SweetApplication.mScreenWidth;
+                Point point = new Point(screenWidth / 2, screenWidth / 2);
+                onCameraFocus(point);
+                sendEmptyMessageDelayed(MSG_REQUEST_FOCUS, 2 * 1000);
+                return;
+            }
 
             boolean result = (Boolean) msg.obj;
 

@@ -435,7 +435,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, I
                 onCameraPrepareListener.onPrepare(mCameraId);
             }
             if (mCamera != null) {
-                startOrientationChangeListener();
+//                startOrientationChangeListener(); // 眼镜没有这个传感器
             }
         }
     }
@@ -547,8 +547,8 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, I
      */
     private class CameraOrientationListener extends OrientationEventListener {
 
-        private int mCurrentNormalizedOrientation;
-        private int mRememberedNormalOrientation;
+        private int mCurrentNormalizedOrientation = 180;
+        private int mRememberedNormalOrientation = 180;
 
         public CameraOrientationListener(Context context) {
             super(context, SensorManager.SENSOR_DELAY_NORMAL);

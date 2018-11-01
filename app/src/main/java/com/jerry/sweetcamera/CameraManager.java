@@ -301,7 +301,7 @@ public class CameraManager implements ICameraHelper {
 
         try {
             Camera.Size adapterSize = findFitPreResolution(camera);
-            parameters.setPictureSize(adapterSize.width, adapterSize.height);
+//            parameters.setPictureSize(adapterSize.width, adapterSize.height); // 在眼镜上不注释这个会出错？ljr
             camera.setParameters(parameters);
 
             Log.i(TAG, "setFitPreSize:" + adapterSize.width + "*" + adapterSize.height);
@@ -495,10 +495,10 @@ public class CameraManager implements ICameraHelper {
     public void releaseCamera(Camera camera) {
         if (camera != null) {
             try {
-                camera.release();
                 camera.stopPreview();
                 camera.setPreviewCallback(null);
                 camera.setPreviewCallbackWithBuffer(null);
+                camera.release();
                 camera = null;
             } catch (Exception e) {
                 e.printStackTrace();
